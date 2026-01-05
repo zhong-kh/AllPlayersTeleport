@@ -7,6 +7,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import org.bukkit.entity.Player;
 
 public class PluginCmd {
@@ -18,9 +19,9 @@ public class PluginCmd {
         // root node
         LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal("ptp");
 
-        root.then(Commands.argument("Player",
-                ArgumentTypes.player()
-                )).executes(
+        root.then(
+                Commands.argument("Player", ArgumentTypes.player())
+                        .executes(
                         ctx -> {
 
                             // Test if command sender is a player
@@ -29,12 +30,13 @@ public class PluginCmd {
                                 return Command.SINGLE_SUCCESS;
                             }
 
-                            final Player destPlayer = ctx.getArgument("Player", Player.class);
+                            final PlayerSelectorArgumentResolver targetResolver = ctx.getArgument("Player", PlayerSelectorArgumentResolver.class);
+                            final Player destPlayer = targetResolver.resolve(ctx.getSource()).getFirst();
                             ctx.getSource().getExecutor().teleportAsync(destPlayer.getLocation());
                             ctx.getSource().getExecutor().sendMessage("[AllPlayersTeleport] You successfully teleported!");
 
                             return Command.SINGLE_SUCCESS;
-                        }
+                        })
         );
 
         buildCmd = root.build();

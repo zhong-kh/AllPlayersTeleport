@@ -12,6 +12,7 @@ public final class AllPlayersTeleport extends JavaPlugin {
         // Plugin startup logic
 
         // Register commands
+        PluginCmd.commandRegister();
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS,
                 cmds -> {
                     cmds.registrar().register(PluginCmd.buildCmd);
